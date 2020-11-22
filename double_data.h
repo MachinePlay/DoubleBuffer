@@ -42,23 +42,23 @@ public:
         return _pre_ptr.use_count() > 1 ? false : true;
     }
 
-    /**
-    * reload the dual buffer
-    * @param DataType relaod parameter, DataType must implement reload function
-    * @return true if reload ok, otherwise false.
-    */
-   template <typename... Args>
-   bool reload(Args&&... args) {
-        //only one thread can reload
-       std::lock_guard<std::mutex> lock(_lock);
-       if(is_allow_reload()) {
-            _pre_ptr->reload(std::forward<Args>(args)...);
-            swap_dual_buffer();
-            return true;
-       }
+//     /**
+//     * reload the dual buffer
+//     * @param DataType relaod parameter, DataType must implement reload function
+//     * @return true if reload ok, otherwise false.
+//     */
+//    template <typename... Args>
+//    bool reload(Args&&... args) {
+//         //only one thread can reload
+//        std::lock_guard<std::mutex> lock(_lock);
+//        if(is_allow_reload()) {
+//             _pre_ptr->reload(std::forward<Args>(args)...);
+//             swap_dual_buffer();
+//             return true;
+//        }
 
-        return false;
-   }
+//         return false;
+//    }
 
     /**
     * get dual buffer backup data

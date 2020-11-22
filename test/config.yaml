@@ -1,0 +1,13 @@
+custom_db:
+    db_domain: 10.0.0.8
+    db_username: root
+    db_passwd: my_passwd
+    db_schema: test
+
+redis:
+    redis_domain: 10.0.0.10
+    redis_passwd: 123456
+
+hello:
+    num_config: [1141studio]
+    name_config: [powered, by, 1141studio]
