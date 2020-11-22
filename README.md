@@ -133,7 +133,7 @@ private:
 };
 } // end namespace utils
 } // end namespace inf
-
+```
 
 ## 改进
 上面的版本已经是个基本可用的版本，存在这几个问题：  
@@ -150,4 +150,4 @@ DoubleBuffer<DataType, Loader>
 - init //初始化
 - get_data //获取数据，这个数据可能会自动更新，但是对用户透明
 - reload //主动触发热加载
-```
+
