@@ -106,7 +106,7 @@ public:
     */
    std::vector<std::string> get_need_switch_file() {
        std::vector<std::string> update_file_names;
-       for (auto [file_name, last_modify_time] : _file_status_table) {
+       for (auto [&file_name, &last_modify_time] : _file_status_table) {
            struct stat file_status;
            if (stat(file_name.c_str(), &file_status) !=0) {
                return update_file_names;
