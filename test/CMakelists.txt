@@ -2,7 +2,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.14)
 # 指定工程的名称
 PROJECT(DoubleBufferTest)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 #指定头文件目录位置
 INCLUDE_DIRECTORIES(../)
 # INCLUDE_DIRECTORIES(/usr/local/Cellar/protobuf/3.15.5/include)
