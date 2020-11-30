@@ -24,23 +24,36 @@ public:
         static ConfManager instance;
         return instance;
     }
-    int init(const std::string& file_name) {
-        
-    }
 
+    /**
+     * init conf file by file name
+     * not implement now.
+     * @param std::vector<std::string> file_names
+     * @return -1:Failed, 0:OK
+     */
+    int init(const std::string& file_names) {
+        if (file_names.empty()) {
+            return -1;
+        }
+        
+        return 0;
+    }
     
 
 private:
-    typedef std::unordered_map<std::string, std::string> ConfMap;
-    typedef std::unique_ptr<ConfMap>   ConfMapPtr;
-    typedef std::unordered_map<std::string, ConfMapPtr> ConfTable;
+    typedef std::unordered_map<std::string, std::string>    ConfMap;
+    typedef std::unique_ptr<ConfMap>                        ConfMapPtr;
+    typedef std::unordered_map<std::string, ConfMapPtr>     ConfTable;
+    typedef std::unique_ptr<std::thread>                    ThreadPtr;
     
     ConfManager(const ConfManager &rhs) = delete;
     ConfManager &operator=(const ConfManager &rhs) = delete;
 
-    std::string     _file_name;
-    ConfTable       _conf_file_table;
-    static std::mutex      _file_lock;
+    std::string             _file_name;
+    ConfTable               _conf_file_table;
+    static std::mutex       _file_lock;
+    ThreadPtr               _monitor_thread;
+
 };
 
 /** 
@@ -111,6 +124,7 @@ public:
            if (stat(file_name.c_str(), &file_status) !=0) {
                return update_file_names;
            }
+
            if (file_status.st_mtime > last_modify_time) {
                update_file_names.push_back(file_name);
            }

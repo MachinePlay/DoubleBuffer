@@ -5,7 +5,8 @@
 #include <iostream>
 #include <memory>
 #include <cstdint>
-
+#include <unistd.h>
+#include <fcntl.h>
 /**
  * @class DemoServerTest
  * @desc 测试DemoServer环境初始化类
@@ -84,7 +85,35 @@ TEST_F(TestDoubleBuffer, test_SwithMonitor)  {
     stat(DB_FILE.c_str(), &test_file_status);
     //asert file stat
     ASSERT_EQ(test_file_status.st_mtime, file_list[DB_FILE]);
+
+    //test file change
+    const std::string NEW_DB_FILE = "new_file.yaml";
+    int fd = open(NEW_DB_FILE.c_str(), O_RDWR | O_CREAT | O_TRUNC, 777);
+    std::string file_content = "world";
+    char buf[] = "hello";
+    write(fd, buf, strlen(buf));
+    ::inf::utils::SwitchMonitor change_file_monitor;
+    change_file_monitor.init(NEW_DB_FILE);
+    
+    //chang file
+    auto new_file_list = change_file_monitor.get_monitor_file_list();
+    snprintf(buf, file_content.size() +1, "%s", file_content.c_str());
+    sleep(2);
+    write(fd, buf, file_content.size());
+    close(fd);
+
+    auto change_file = change_file_monitor.get_need_switch_file();
+    std::string ret_name = "";
+    for(auto &file_name : change_file) {
+        ret_name = file_name;
+    }
+    remove(NEW_DB_FILE.c_str());
+    ASSERT_EQ(NEW_DB_FILE, ret_name);
+    
+   
+    
 }
+
 
 //test YamlLoader
 TEST_F(TestDoubleBuffer, test_YamlLoader) {
