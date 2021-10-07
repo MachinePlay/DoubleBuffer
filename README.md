@@ -18,7 +18,7 @@ A lite-weight double buffer C++ library implementation.
 - 这是一个Header-Only的库，拷贝`double_buffer.h`到工程中使用即可
 - 也直接使用yaml配置版本，需要链接yaml-cpp, 也可以继承后实现自己的数据relaod.   
 
-`example`中有使用示例，使用cmake拉取yaml-cpp联编
+`example`中有使用示例，使用cmake拉取yaml-cpp联编.
 ```
 cd example
 mkdir build
