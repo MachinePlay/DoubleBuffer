@@ -1,0 +1,34 @@
+name: UnitTest
+
+on: [push, pull_request]
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
+
+jobs:
+
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+#     - name: prepare git for checkout on windows
+#       if: matrix.os == 'windows-latest'
+#       run: |
+#         git config --global core.autocrlf false
+#         git config --global core.eol lf
+    - name: checkout
+      uses: actions/checkout@v2
+#     - name: UnitTest on Windows
+#       if: matrix.os == 'windows-latest'
+#       run: docker-compose -f ./docker-compose-unittest.yml up
+    - name: UnitTest on Linux
+      if: matrix.os == 'ubuntu-latest'
+      run: docker-compose -f ./docker-compose-unittest.yml up
+#     - name: UnitTest on macOS
+#       if: matrix.os == 'macOS-latest'
+#       run: docker-compose -f ./docker-compose-unittest.yml up

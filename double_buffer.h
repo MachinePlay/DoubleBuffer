@@ -13,6 +13,7 @@
 #include <mutex>
 #include <iostream>
 #include <pthread.h>
+#include <atomic>
 
 namespace inf {
 namespace utils {
@@ -114,7 +115,7 @@ public:
     typedef std::unique_ptr<Loader>     LoaderPtr;
     typedef std::unique_ptr<std::thread> ThreadPtr;
     /* ctor. */
-    DoubleData(LoaderPtr loader, int64_t interval = DEFAULT_INTERVAL, bool is_monitor = true) 
+    DoubleData(LoaderPtr loader, int64_t interval = DEFAULT_INTERVAL, bool is_monitor = false) 
         : _loader(std::move(loader)), _interval(interval), _is_monitor(is_monitor) {
         
     };
@@ -148,7 +149,7 @@ public:
 
     void run () {
         //detect file per interval
-        while(_is_monitor) {
+        while (_is_monitor) {
             auto update_files = _monitor.get_need_switch_file();
             if (!update_files.empty()){
                 swap_data();
@@ -167,12 +168,9 @@ public:
         //only one thread can manipulate
         std::lock_guard<std::mutex> lock(_lock);
         //make sure the backup data has no user.
-        std::cout << "backup use_cunt " <<  _backup.use_count() << std::endl;
-        std::cout << "font user_count " << _current.use_count() << std::endl;
         // if (_backup.use_count() > 1) {
         //     return false;
         // }
-        std::cout << "swap start" << std::endl;
         *_backup = _loader->load();
         _current.swap(_backup);
         return true;
