@@ -5,8 +5,6 @@ services:
     image: machineplay/gcc10-standard-env
     command: sh -c "/bin/bash"
     container_name: double-buffer-gcc10
-    ports:
-      - 3000:3000
     working_dir: /root
     volumes:
       - ./:/root/app

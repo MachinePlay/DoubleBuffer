@@ -3,7 +3,7 @@ version: "3.7"
 services:
   app:
     image: machineplay/gcc10-standard-env
-    command: sh -c "cd /root/app/test/build  &&  cmake .. && make -j8 && cp ./bin/gctest ./ && ./gctest"
+    command: sh -c "cd /root/app/test/build  &&  cmake .. && make -j8 && ./DoubleBufferTest"
     container_name: gcc10-unittest-env
     working_dir: /root
     volumes:
