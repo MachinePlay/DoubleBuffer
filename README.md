@@ -1,7 +1,7 @@
 DoubleBuffer
 ===========
 ![GitHub](https://img.shields.io/github/license/machineplay/DoubleBuffer)
-[![](https://github.com/MachinePlay/DoubleBuffer/workflows/test/badge.svg)](https://github.com/MachinePlay/DoubleBuffer/actions)  
+[![UnitTest](https://github.com/MachinePlay/DoubleBuffer/actions/workflows/docker-image.yml/badge.svg)](https://github.com/MachinePlay/DoubleBuffer/actions/workflows/docker-image.yml) 
 
 A lite-weight double buffer C++ library implementation.
 
