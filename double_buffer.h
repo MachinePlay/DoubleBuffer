@@ -114,11 +114,17 @@ public:
     typedef std::unique_ptr<Loader>     LoaderPtr;
     typedef std::unique_ptr<std::thread> ThreadPtr;
     /* ctor. */
-    DoubleData(LoaderPtr loader) : _loader(std::move(loader)) {
+    DoubleData(LoaderPtr loader, int64_t interval = DEFAULT_INTERVAL, bool is_monitor = true) 
+        : _loader(std::move(loader)), _interval(interval), _is_monitor(is_monitor) {
         
     };
+
     /* dtor. */
-    virtual ~DoubleData() = default;
+    virtual ~DoubleData() {
+        if (_is_monitor && _monitor_thread && _monitor_thread->joinable()) {
+                _monitor_thread->join();
+        }
+    }
     
     /**
     * init the double buffer, using Loader to load the buffer.
@@ -132,7 +138,9 @@ public:
         *_backup = *_current;
 
         _monitor.init(_loader->get_load_file_name());
-        _interval = DEFAULT_INTERVAL;
+        if (_is_monitor) {
+            _monitor_thread.reset(new std::thread(&DoubleData::run, this));
+        }
       
 
         return 0;
@@ -140,7 +148,7 @@ public:
 
     void run () {
         //detect file per interval
-        while(true) {
+        while(_is_monitor) {
             auto update_files = _monitor.get_need_switch_file();
             if (!update_files.empty()){
                 swap_data();
@@ -203,6 +211,8 @@ private:
     std::mutex          _lock;
     /* data loader. Loader must implement load() and return std::shared_ptr<BufferType> */
     LoaderPtr           _loader;
+    /* whether use auto update. */
+    std::atomic<bool>   _is_monitor;
     /* file monitor interval. */
     int64_t             _interval{60};
     /* file SwitchMonitor. need to be init afer DoubleBuffer init()*/

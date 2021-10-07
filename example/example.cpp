@@ -23,9 +23,6 @@ int main() {
     
 
     //use double data
-
-    std::thread t1(&inf::utils::DoubleData<YAML::Node, ::inf::utils::YamlLoader>::run, config_data);
-    t1.detach();
     std::atomic<int> cnt = 0;
     while(true) {
         ++cnt;
@@ -44,8 +41,6 @@ int main() {
         }
 
     }
-
-    // t1.join();
 
 
     
