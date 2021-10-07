@@ -15,7 +15,77 @@ A lite-weight double buffer C++ library implementation.
 - 需要修改数据时，由一个写线程修改`未使用backup`的buffer，将其更新为最新版本，然后交换前后台数据（通常是直接将业务用的数据指针更新指向`backup`的buffer），睡眠一段时间（可以不睡,这里可以思考下为什么要睡眠），此时`current`里是最新数据，`backup`中的buffer已经算是旧数据了，可以将此时的`backup`buffer更新为`current`buffer,方便下一轮修改
 
 # 快速使用
-是一个HeaderOnly的库，可以直接使用yaml配置版本，也可以继承后实现自己的数据relaod
+- 这是一个Header-Only的库，拷贝`double_buffer.h`到工程中使用即可
+- 也直接使用yaml配置版本，需要链接yaml-cpp, 也可以继承后实现自己的数据relaod.   
+
+`example`中有使用示例，使用cmake拉取yaml-cpp联编
+```
+cd example
+mkdir build
+cmake ..
+make -j8
+./DoubleBufferExample
+```  
+即可执行，会在`build目录下新建测试用的配置文件`test.yaml`,修改文件内容，程序读取的buffer会发生改变，实现运行时自动监听文件内容变化，实现热加载
+
+```
+#include "double_buffer.h"
+#include <iostream>
+#include <string>
+#include <unistd.h>
+#include <fcntl.h>
+#include <atomic>
+
+int main() {
+    //配置文件名
+    const std::string config_file = "test.yaml";
+    //新建配置文件
+    int fd = open(config_file.c_str(), O_RDWR | O_CREAT | O_TRUNC, 777);
+    std::string content= "redis_domain: 10.0.0.10";
+    write(fd, content.c_str(), content.size());
+    close(fd);
+    //这里的作用是新建配置文件供测试使用，实际业务中的配置文件可以自己搞
+
+    //use loader, init loader
+    //用unique_ptr创建Loader，可以实现自己的loader，做自定义类似配置解析的工作
+    std::unique_ptr<::inf::utils::YamlLoader> loader = std::make_unique<::inf::utils::YamlLoader>();
+    //绑定loader到配置文件上
+    loader->init(config_file.c_str());
+
+    //init double data
+    //初始化double buffer
+    auto config_data = new ::inf::utils::DoubleData<YAML::Node, ::inf::utils::YamlLoader>(std::move(loader));
+    config_data->init();
+    
+
+    //use double data
+    //在业务中使用，程序运行过程中，配置文件变更，下一次会读到最新的配置
+    std::atomic<int> cnt = 0;
+    while(true) {
+        ++cnt;
+        auto config_ptr = config_data->get_current();
+        std::cout << "ptr1 "<<(*config_ptr)["redis_domain"] << std::endl;
+        std::cout << "ptr2 "<<(*config_ptr)["redis_domain"] << std::endl;
+        std::cout << "ptr3 "<<(*config_ptr)["redis_domain"] << std::endl;
+        std::cout << "ptr4 "<<(*config_ptr)["redis_domain"] << std::endl;
+        std::cout << "ptr5 "<<(*config_ptr)["redis_domain"] << std::endl;
+        //do something
+        sleep(1);
+        std::cout << "ptr6 "<<(*config_ptr)["redis_domain"] << std::endl;
+        
+        if(cnt % 2 == 0) {
+            sleep(1);
+        }
+
+    }
+
+
+    
+    std::cout << "Hello world" << std::endl;
+    return 0;
+}
+
+```
 
 
 
